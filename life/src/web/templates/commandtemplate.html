@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+{% import "bootstrap/wtf.html" as wtf %}
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>重测序</title>
+
+<style type="text/css">
+
+.STYLE1 {
+	font-family: "华文行楷";
+	font-size: 36px;
+}
+.STYLE2 {
+
+	font-size: 18px;
+}
+input[type="text"][class="taginput2n"]{
+    line-height: 1.5em;
+    color:green;
+    text-align:left;
+    width:136px;
+    border-left:0px;
+    border-right:0px;
+    margin:0 0 0 -7px;
+    background:white;
+}
+input[type="text"][class="taginput1n"]{
+    line-height: 1.5em;
+    border-right:0px;
+    width:65px;
+    outline:none;
+}
+input[type="text"][class="taginput3n"]{
+    line-height: 1.5em;
+    border-left: 0px;
+    width:65px;
+    margin:0 0 0 -7px;
+    outline:none;
+}
+</style>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+function change(v){
+	if(v == 1){
+		document.getElementById("test").innerHTML = " <table><tr><td>-1INPUT：<input type='text' name='zx' /></td></tr>	</table><table><tr><td>-2INPUT：<input type='text' name='zx' /></td></tr></table>"
+	}
+	if(v == 2){
+		document.getElementById("test").innerHTML = " <table><tr><td>INPUT：<input type='text' name='zx' /></td></tr></table>"
+	}
+	if(v == 3){
+		document.getElementById("test").innerHTML = "INPUT：<input type='text' name='zx'/>";
+	}else if(v == 4){
+		document.getElementById("test").innerHTML = "-l：<input type='text' name='zx'/>";
+		}
+}
+
+$(function() {
+	//$('form').bind('submit', function() { $('#foldertag').val($('#ppp').text()) });
+	$('form').bind('submit', function() { $('#foldertag1').val($('#taginput1').val());$('#foldertag3').val($('#taginput3').val())});
+	$('form').bind('submit', function() { $('#foldertag2').val($("input[id='taginput2']").val());$('#foldertag4').val($("input[id='taginput4']").val())});
+
+	$('form').bind('submit', function() { $('#pinput1').val($('#inputoptsufix1').val());$('#pinput3').val($('#inputoptsufix3').val())});
+	$('form').bind('submit', function() { $('#pinput2').val($("input[id='inputoptsufix2']").val());$('#pinput4').val($("input[id='inputoptsufix4']").val())});
+    $("div[data-toggle=fieldset]").each(function() {
+        var $this = $(this);
+
+        //Add new entry
+        $this.find("button[data-toggle=fieldset-add-row]").click(function() {
+            var target = $($(this).data("target"));
+            //console.log(target);
+            var oldrow = target.find("[data-toggle=fieldset-entry]:last");
+            var row = oldrow.clone(true, true);
+            var elem_id = row.find(":input")[0].id;
+            var elem_prefix = elem_id.replace(/(.*)-(\d{1,4})/m, '$1')// max 4 digits for ids in list
+            var elem_num = parseInt(elem_id.replace(/(.*)-(\d{1,4})/m, '$2')) + 1;
+            //console.log(elem_prefix);
+            //console.log(elem_num);
+            row.children(':input').each(function() {
+                var id = $(this).attr('id').replace(elem_prefix+'-' + (elem_num - 1), elem_prefix+'-' + (elem_num));
+                $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
+            });
+            row.children('label').each(function() {
+                var id = $(this).attr('for').replace(elem_prefix+'-' + (elem_num - 1), elem_prefix+'-' + (elem_num));
+                $(this).attr('for', id);
+            });
+            row.show();
+            oldrow.after(row);
+        }); //End add new entry
+        //Remove row
+        $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
+            if($this.find("[data-toggle=fieldset-entry]").length > 1) {
+                var thisRow = $(this).closest("[data-toggle=fieldset-entry]");
+                thisRow.remove();
+            }
+        }); //End remove row
+    });
+});
+
+function add1(){
+	input1 = document.createElement('input');
+	input1.setAttribute('type', 'text');
+
+	var btn1 = document.getElementById("org");
+	var n = document.getElementById("org").value;
+	n=n+1
+	input1.setAttribute('id', n);
+	btn1.insertBefore(input1,btn1.childNodes[0]);
+}
+
+function setText(obj)
+{
+    if(obj.checked==true)
+    {
+        document.getElementById("txtName").disabled=false;
+		document.getElementById("txtName1").disabled=false;
+    }
+    else
+    {
+        document.getElementById("txtName").disabled=true;
+        document.getElementById("txtName").value="0";
+
+		document.getElementById("txtName1").disabled=true;
+        document.getElementById("txtName1").value="";
+    }
+}
+</script>
+
+</head>
+
+<body>
+<div id="main">
+<div align="center" class="STYLE1">生物信息自动化分析系统</div>
+<div align="center" class="STYLE2"> 可通过该web界面对大规模二代测序数据进行分析处理，管理，任务监控与自动化投放，参数记录等</div><br/><br/>
+<div>
+<form action="{{url_for('configsoftware')}}" method="post" >
+{{ form.csrf_token }}
+	{{form.projectpath.label}}&nbsp<!-- <input type="text">-->{{form.projectpath}}<br />
+	{{form.collectiondepth.label}}&nbsp<!-- <input type="text">-->{{form.collectiondepth}}<br />
+	{{form.datadepth.label}}&nbsp<!--<input type="text">-->{{form.datadepth}} <br /><br />
+
+	<br />
+    <div id="myfrom">
+{{ wtf.form_field(form.software, id="software") }}
+<!--    <div id="test">
+    <table><tr><td>参数：<input type="text" name="zx" /></td></tr></table>
+    </div>-->
+{{form.input1part1.label}}&nbsp<input type="text" class="taginput1n" id="inputoptsufix1" value="-1"/>
+<input type="text" class="taginput2n"  value="+输入文件的后缀名：" disabled/>
+<input type="text" class="taginput3n" id="inputoptsufix2" value="1.fq.gz" /><br/>
+{{form.input2part1.label}}&nbsp<input type="text" class="taginput1n" id="inputoptsufix3" value="-2"/>
+<input type="text" class="taginput2n"  value="+输入文件的后缀名：" disabled/>
+<input type="text" class="taginput3n" id="inputoptsufix4" value="2.fq.gz"/>
+	</div>
+    <br /><br />
+    {{form.outputpath.label}}&nbsp&nbsp&nbsp<!--<input type="text">--> {{form.outputpath}}<br />
+	{{form.outputperfix.label}}<!--<input type="text">--> {{form.outputperfix}} &nbsp&nbsp	<br />
+	{{form.outputperfix2.label}}<!--<input type="text">--> {{form.outputperfix2}} &nbsp&nbsp	<br />
+	{{form.commandParameters.label}}</br>{{form.commandParameters(rows='8',cols='40')}}
+
+<!--<input id="txtName1" type="text" disabled=true/>&nbsp;&nbsp;
+	{{form.foldername}}&nbsp;&nbsp;
+	<input type="button" onclick="add1();"  value="添加" /> <br /><br />
+</div>-->
+
+
+
+<!--<p id="ppp" contenteditable = "true">sddfd<input type="text" value="此处将被替换为目录名的字段" disabled=true>dddf</p>-->
+<br/>
+<input type="text" class="taginput1n" id="taginput1" value="--rg 'ID:"/>
+<input type="text" class="taginput2n"  value="+该字段替换为目录名+" disabled/>
+<input type="text" class="taginput3n" id="taginput2" value="'"/><br/>
+<input type="text" class="taginput1n" id="taginput3" value="--rg 'SM:"/>
+<input type="text" class="taginput2n"  value="+该字段替换为目录名+" disabled/>
+<input type="text" class="taginput3n" id="taginput4" value="'"/>
+{#% {{ wtf.form_field(form.iomode, id="iomode") }} %#}
+<input type="hidden" name="xxxx">
+	{{wtf.form_field(form.tagtoFolderlevel,id="tagtxtName" )}}<br /><br />
+
+	是否需要筛选数据：<input name="Checkbox1" type="checkbox" onclick="setText(this)"/><br /><br />
+	{{wtf.form_field(form.filteredforderlevel,id="txtName" )}}<br /><br />
+<div data-toggle="fieldset" id="filteredforders-fieldset" >
+<button type="button" data-toggle="fieldset-add-row" data-target="#filteredforders-fieldset" >"添加"</button>
+        <ul id="filteredforders">
+        <label >输入路径的筛选层需含有以下目录名称:</label><br/>
+            {% for filteredforder in form.filteredforders %}
+            <li data-toggle="fieldset-entry" >
+
+                <input id="filteredforders-{{ loop.index0 }}" name="filteredforders-{{ loop.index0 }}" type="text" value="{{ filteredforder.data }}">
+                <button type="button" data-toggle="fieldset-remove-row" id="filteredforders-{{loop.index0}}-remove">-</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+<input type="submit" value="提交" ><br /><br />
+{{ wtf.form_field(form.tag1part1, id="foldertag1") }}{{ wtf.form_field(form.tag1part2, id="foldertag2") }}
+{{ wtf.form_field(form.tag2part1, id="foldertag3") }}{{ wtf.form_field(form.tag2part2, id="foldertag4") }}
+
+{{ wtf.form_field(form.input1part1, id="pinput1") }}{{ wtf.form_field(form.input1part2, id="pinput2") }}
+{{ wtf.form_field(form.input2part1, id="pinput3") }}{{ wtf.form_field(form.input2part2, id="pinput4") }}
+显示结果：<br />
+    <textarea rows="8" cols="40" disabled=true></textarea><br /><br />
+    {{wtf.form_field(form.NumOfThreads)}}<br />
+	{{ wtf.form_field(form.submit, button_map={'id':'submit_button'}) }}
+	<input type="submit" value="提交运行">
+
+</form>
+{% if form.errors %}
+    <ul class="errors">
+        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+            {% for error in field_errors %}
+                <li>{{ form[field_name].label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
+</body>
+</html>
